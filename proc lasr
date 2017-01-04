@@ -1,0 +1,30 @@
+/*load dataset in memory for VA Dashboard*/
+
+libname hps sasiola port=10010 tag="hps";
+option set=GRIDHOST="xxxxxxxxxxxxxxx";
+option set=GRIDINSTALLLOC="/opt/sas/TKGrid";
+
+proc lasr port=10010;
+     remove hps.enrollments_smry;
+run;
+
+proc lasr port=10010 details = all;
+run;
+
+
+libname sasdata "/mnt/SAS/data/VA Dashboard";
+
+
+data hps.enrollments_smry;
+    set sasdata.enrollments_smry;
+run;
+
+options metaserver="xxxxxxxxxxxxxx" metaport=8561 metauser="xxxxxxxx"
+             metapass="xxxxxxxxxxx" metarepository="Foundation"  metaprotocol=BRIDGE;
+
+
+proc metalib;
+     omr (library="Visual Analytics LASR");
+     report (type=summary);
+     folder="/SPG Lifecycle/Reporting/LASR Data";
+run;
